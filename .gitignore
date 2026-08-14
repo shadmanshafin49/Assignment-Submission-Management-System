@@ -1,0 +1,57 @@
+# ---------------------------------------------------------------- secrets
+.env
+.env.local
+.env.*.local
+*.pfx
+*.key
+
+# ------------------------------------------------------------------ .NET
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+artifacts/
+*.user
+*.suo
+*.userprefs
+.vs/
+TestResults/
+coverage*.json
+coverage*.xml
+*.coverage
+logs/
+*.log
+
+# --------------------------------------------------------- runtime uploads
+# Attachment bytes written by the app (and by the seeder) at Storage:Root.
+# Runtime data, not source — the database keeps the metadata, and a fresh run
+# writes the files again.
+backend/src/Ams.Api/uploads/
+
+# ------------------------------------------------------------------ Node
+node_modules/
+.next/
+out/
+build/
+.turbo/
+*.tsbuildinfo
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ------------------------------------------------------------------- IDE
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# --------------------------------------------------------------- project
+# The brief PDF is the assignment spec, not part of the deliverable.
+*.pdf
+
+# Working notes kept locally: the brief's enhancement round, the build plan it
+# came from, and the scoreboard tracking it. Scaffolding for the work, not the
+# work — the README is the document that describes the delivered system.
+enhancement.md
+PLAN.md
+PROGRESS.md

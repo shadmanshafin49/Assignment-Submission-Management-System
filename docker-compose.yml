@@ -1,0 +1,72 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: ams-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ams}
+      POSTGRES_USER: ${POSTGRES_USER:-ams}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ams_dev_password}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - ams-db-data:/var/lib/postgresql/data
+    healthcheck:
+      # The API waits on this, so it never starts against a database that is still booting.
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ams} -d ${POSTGRES_DB:-ams}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ams-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Production, not Development. Nothing here needs the Development branch —
+      # Swagger and the migrate+seed on boot are both unconditional — but the 500
+      # handler keys off it, and in Development it returns the full .NET stack
+      # trace to the caller. This is the stack the README tells an evaluator to
+      # run, so it should not be the one that hands out internal file paths.
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_HTTP_PORTS: 8080
+      ConnectionStrings__Default: >-
+        Host=db;Port=5432;Database=${POSTGRES_DB:-ams};Username=${POSTGRES_USER:-ams};Password=${POSTGRES_PASSWORD:-ams_dev_password}
+      JWT__KEY: ${JWT_KEY:?JWT_KEY must be set — copy .env.example to .env}
+      JWT__ISSUER: AmsApi
+      JWT__AUDIENCE: AmsFrontend
+      Cors__AllowedOrigins__0: ${FRONTEND_ORIGIN:-http://localhost:3000}
+      Storage__Root: /app/uploads
+    ports:
+      - "${API_PORT:-8080}:8080"
+    volumes:
+      # Attachment bytes live on disk, their metadata in Postgres. Without this
+      # volume the two would part company the moment the container is recreated:
+      # the database keeps the rows, the files are gone, and every download 404s.
+      - ams-uploads:/app/uploads
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ams-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      NODE_ENV: production
+      # The browser only ever talks to Next's own /api/proxy route; Next then
+      # calls the API server-side. So this is a runtime value on the container
+      # network, not a NEXT_PUBLIC_* baked in at build time.
+      API_BASE_URL: http://api:8080
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+
+volumes:
+  ams-db-data:
+  ams-uploads:

@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+/*
+  Kalpurush (Avro Font Project, SIL OFL 1.1 — licence shipped at
+  /fonts/OFL.txt). Self-hosted rather than pulled from a CDN so the app keeps
+  working on a school connection with no route to the open internet.
+
+  `local()` comes first on purpose: Kalpurush is already installed on most
+  Bangladeshi desktops, and those machines then pay nothing for it. Only a
+  device without it spends the 112 KB, once, and `swap` means the text is
+  readable in a device Bengali face while that happens.
+
+  size-adjust is not decoration. Kalpurush has a small x-height (0.454em against
+  Nirmala UI's 0.500em), so at the sizes this UI was drawn for it renders
+  noticeably smaller than the stack it replaces. 108% restores that optical size
+  and — conveniently — puts the font's own line box at 1.70em, exactly the body
+  leading below, so the below-line vowel signs still clear a `truncate`d cell.
+*/
+@font-face {
+  font-family: "Kalpurush";
+  src: local("Kalpurush"), url("/fonts/kalpurush.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  size-adjust: 108%;
+}
+
+/*
+  Palette is defined once as CSS variables and mapped into Tailwind's theme, so
+  every component references semantic names (`bg-surface`, `text-muted`) rather
+  than raw colours.
+
+  The app is deliberately light-only. It is a school for eleven-to-fourteen year
+  olds; a dark console is the wrong register, and half the screens it runs on are
+  shared classroom machines where the OS theme says nothing about the room. So
+  `color-scheme: light` is pinned — without it, a Windows machine in dark mode
+  renders the form controls dark against these light surfaces.
+*/
+:root {
+  color-scheme: light;
+
+  --background: #f4f7fb;
+  --surface: #ffffff;
+  --surface-muted: #eef2f8;
+  --border: #dde5ef;
+  --foreground: #16202e;
+  --muted: #5c6a7e;
+
+  /* Cheerful, not corporate: a bright school blue with a warm amber accent. */
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-foreground: #ffffff;
+  --primary-soft: #e8f0ff;
+
+  --accent: #f59e0b;
+  --accent-soft: #fff5e2;
+
+  --success: #0f8a4d;
+  --success-soft: #e4f7ed;
+  --warning: #b45309;
+  --warning-soft: #fdf1dd;
+  --danger: #d11f45;
+  --danger-soft: #fdeaef;
+  --info: #0284c7;
+  --info-soft: #e3f4fd;
+
+  --ring: #93b4fd;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --color-ring: var(--ring);
+
+  /*
+    Kalpurush first. Every string in this app is Bangla, and a Latin-first stack
+    would push যুক্তাক্ষর through a fallback face with the wrong metrics — বিজ্ঞান
+    and গণিত end up on visibly different baselines in the same line of a table.
+    The rest are device-local Bengali faces, in the order they are likely to be
+    installed, so a browser that never gets the webfont still lands on a Bengali
+    face rather than on Arial.
+  */
+  --font-sans: "Kalpurush", "Noto Sans Bengali", "Hind Siliguri", "Nirmala UI",
+    "Kohinoor Bangla", "Bangla Sangam MN", "SolaimanLipi", ui-sans-serif,
+    system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/*
+  Subject accents. A class takes fourteen subjects, and the fastest way for a
+  student to find গণিত in a stream of cards is colour, not reading. Assigned by
+  board subject code so a subject keeps the same colour on every screen.
+*/
+:root {
+  --tone-1: #2563eb; --tone-1-soft: #e8f0ff; /* বাংলা ১ম */
+  --tone-2: #7c3aed; --tone-2-soft: #f1e9fe; /* বাংলা ২য় */
+  --tone-3: #0891b2; --tone-3-soft: #e0f5fa; /* ইংরেজি ১ম */
+  --tone-4: #0d9488; --tone-4-soft: #e0f5f2; /* ইংরেজি ২য় */
+  --tone-5: #dc2626; --tone-5-soft: #fdeaea; /* গণিত */
+  --tone-6: #16a34a; --tone-6-soft: #e5f7ec; /* বিজ্ঞান */
+  --tone-7: #ea580c; --tone-7-soft: #fdeee3; /* বাংলাদেশ ও বিশ্বপরিচয় */
+  --tone-8: #4f46e5; --tone-8-soft: #ebeafd; /* আইসিটি */
+  --tone-9: #047857; --tone-9-soft: #e2f4ee; /* ধর্ম */
+  --tone-10: #b45309; --tone-10-soft: #fbf0dd; /* কৃষি */
+  --tone-11: #be185d; --tone-11-soft: #fce8f0; /* শারীরিক */
+  --tone-12: #6d28d9; --tone-12-soft: #f0e9fd; /* চারু ও কারুকলা */
+  --tone-13: #0369a1; --tone-13-soft: #e2f0fa; /* কর্ম ও জীবনমুখী */
+  --tone-14: #57534e; --tone-14-soft: #f0efee; /* fallback */
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+  Bangla sits taller than Latin: the মাত্রা and the below-line vowel signs both
+  need room, and Tailwind's default leading clips them in dense tables.
+*/
+body {
+  line-height: 1.7;
+}
+
+h1, h2, h3, .tabular-nums {
+  line-height: 1.45;
+}
+
+/* One consistent focus ring everywhere, including keyboard nav in tables. */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
