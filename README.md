@@ -40,8 +40,8 @@ Built for the OnnoRokom Projukti Ltd. Assistant Software Engineer recruitment pr
 want to run the projects directly.
 
 ```bash
-git clone <repository-url>
-cd "Onnorokom Projects"
+git clone https://github.com/shadmanshafin49/Assignment-Submission-Management-System.git
+cd Assignment-Submission-Management-System
 
 cp .env.example .env          # Windows: copy .env.example .env
 ```
